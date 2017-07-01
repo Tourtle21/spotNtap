@@ -6,7 +6,7 @@ Make sure the latest version of Xcode is installed.
 
 Download Android Studio
 
-Setup an Android emulator by going to the AVD Manager and click Create Virtual Device
+Set up an Android emulator by going to the AVD Manager and click Create Virtual Device
 
 After setting up the emulator, go to the AVD Manager and click the green play button under Actions
 

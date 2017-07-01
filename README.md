@@ -14,6 +14,7 @@ Download the Expo app on your device
 
 Run the app on your device with
 `npm start`
+
 Then scan the code with the Expo app
 
 To run the app on the iOS simulator

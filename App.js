@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
-const allSymbols = ['\u07f7', '\u2605', '\u265E','\u262D','\u221E','\u266B', ]
+const allSymbols = ['\u07f7', '\u2605', '\u265E','\u262D','\u221E','\u266B', '\u2368']
 const timesThrough = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 var rightPuzzle = [];
 var correct = -1;
@@ -25,7 +25,7 @@ export default class App extends React.Component {
     console.log("HI");
   }
   mapThroughSmall(x) {
-    correct = Math.floor(Math.random() * 4);
+    correct = Math.floor(Math.random() * 3);
     lists = [];
     function switchRandom(newArray) {
       randInd1 = Math.floor(Math.random() * 9);
@@ -39,7 +39,7 @@ export default class App extends React.Component {
         return switchRandom(newArray);
       }
     }
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 3; i++) {
       if (i == correct) {
         lists.push(rightPuzzle);
       }
@@ -56,7 +56,7 @@ export default class App extends React.Component {
       )
     }
     return(
-      <View>
+      <View style={styles.choices}>
         <View onPress={this.check} style={styles.smallBox}>
           {lists[0].map(getAll)}
         </View>
@@ -65,9 +65,6 @@ export default class App extends React.Component {
         </View>
         <View onPress={this.check} style={styles.smallBox}>
           {lists[2].map(getAll)}
-        </View>
-        <View onPress={this.check} style={styles.smallBox}>
-          {lists[3].map(getAll)}
         </View>
       </View>
     )
@@ -128,7 +125,8 @@ const styles = StyleSheet.create({
     width: 75,
     backgroundColor: 'blue',
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    margin: 10
   },
   symbol: {
     fontSize: 70,
@@ -137,5 +135,9 @@ const styles = StyleSheet.create({
   smallSymbol: {
     fontSize: 17.5,
     backgroundColor: 'transparent',
+  },
+  choices: {
+    display: 'flex',
+    flexDirection: 'row',
   }
 });

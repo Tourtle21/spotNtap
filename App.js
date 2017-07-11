@@ -1,61 +1,64 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
-const allSymbols = ['\u07f7', '\u2605', '\u265E','\u262D','\u221E','\u266B', '\u2368']
-const timesThrough = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+const allSymbols = [
+  '\u07f7',
+  '\u2605',
+  '\u265E',
+  '\u262D',
+  '\u221E',
+  '\u266B',
+  '\u2368'
+];
+const timesThrough = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 var rightPuzzle = [];
 var correct = -1;
 
 export default class App extends React.Component {
   onPressTitle() {
-    console.log("HI");
+    console.log('HI');
   }
-  mapThroughMain(x) {
-    randInd = Math.floor(Math.random() * allSymbols.length);
-    rightPuzzle.push(allSymbols[randInd])
-    return(
-      <View key={x} style={styles.box}>
-        <Text className="symbol" style={styles.symbol}>{allSymbols[randInd]}</Text>
-      </View>
-    )
-  }
-  startGame() {
-  }
+  startGame() {}
   check() {
-    console.log("HI");
+    console.log('HI');
   }
   mapThroughSmall(x) {
-    correct = Math.floor(Math.random() * 3);
+    for (var i = 0; i < 9; i++) {
+      randInd = Math.floor(Math.random() * allSymbols.length);
+      rightPuzzle.push(allSymbols[randInd]);
+    }
+    correct = Math.floor(Math.random() * 4);
     lists = [];
     function switchRandom(newArray) {
       randInd1 = Math.floor(Math.random() * 9);
       randInd2 = Math.floor(Math.random() * 9);
       oldPiece = newArray[randInd1];
       newArray[randInd1] = newArray[randInd2];
-      newArray[randInd2] = oldPiece
+      newArray[randInd2] = oldPiece;
       if (newArray[randInd1] != newArray[randInd2]) {
         return newArray;
       } else {
         return switchRandom(newArray);
       }
     }
-    for (var i = 0; i < 3; i++) {
-      if (i == correct) {
+    for (var i = 0; i < 4; i++) {
+      if (i != correct) {
         lists.push(rightPuzzle);
-      }
-      else {
+      } else {
         newArray = rightPuzzle.slice();
         lists.push(switchRandom(newArray));
       }
     }
     function getAll(y) {
-      return(
+      return (
         <View style={styles.smallInnerBox}>
-          <Text style={styles.smallSymbol}>{y}</Text>
+          <Text style={styles.smallSymbol}>
+            {y}
+          </Text>
         </View>
-      )
+      );
     }
-    return(
+    return (
       <View style={styles.choices}>
         <View onPress={this.check} style={styles.smallBox}>
           {lists[0].map(getAll)}
@@ -66,17 +69,17 @@ export default class App extends React.Component {
         <View onPress={this.check} style={styles.smallBox}>
           {lists[2].map(getAll)}
         </View>
+        <View onPress={this.check} style={styles.smallBox}>
+          {lists[3].map(getAll)}
+        </View>
       </View>
-    )
+    );
   }
   render() {
     return (
       <View style={styles.container}>
         {/*<Text onPress={this.onPressTitle}>Hello World!</Text>*/}
-        <Button onPress={this.startGame} title="Start"/>
-        <View style={styles.mainBox}>
-          {timesThrough.map(this.mapThroughMain)}
-        </View>
+        <Button onPress={this.startGame} title="Start" />
         {this.mapThroughSmall()}
       </View>
     );
@@ -89,14 +92,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     flexWrap: 'wrap',
-    marginTop: 50,
+    marginTop: 50
   },
   mainBox: {
     height: 300,
     width: 300,
     backgroundColor: 'blue',
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   box: {
     height: 100,
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   smallInnerBox: {
     height: 25,
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   smallBox: {
     height: 75,
@@ -130,14 +133,14 @@ const styles = StyleSheet.create({
   },
   symbol: {
     fontSize: 70,
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
   smallSymbol: {
     fontSize: 17.5,
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
   choices: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'row'
   }
 });

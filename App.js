@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
+var _ = require('lodash');
 
 const allSymbols = [
   '\u07f7',
@@ -10,77 +17,97 @@ const allSymbols = [
   '\u266B',
   '\u2368'
 ];
-const timesThrough = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-var rightPuzzle = [];
-var correct = -1;
 
 export default class App extends React.Component {
-  onPressTitle() {
-    console.log('HI');
+
+  constructor(props) {
+    super(props);
+
+    this.onPuzzleClick = this.onPuzzleClick.bind(this);
+    this.startNextRound = this.startNextRound.bind(this);
+
+    this.state = {
+      differentPuzzle: null,
+      puzzles: [],
+    }
   }
-  startGame() {}
-  check() {
-    console.log('HI');
+
+  componentDidMount() {
+    this.startNextRound();
   }
-  mapThroughSmall(x) {
+
+  onPuzzleClick(puzzle) {
+    if (puzzle == this.state.differentPuzzle) {
+      this.startNextRound();
+    }
+  }
+
+  generatePuzzle() {
+    let puzzle = [];
     for (var i = 0; i < 9; i++) {
       randInd = Math.floor(Math.random() * allSymbols.length);
-      rightPuzzle.push(allSymbols[randInd]);
+      puzzle.push(allSymbols[randInd]);
     }
-    correct = Math.floor(Math.random() * 4);
-    lists = [];
-    function switchRandom(newArray) {
-      randInd1 = Math.floor(Math.random() * 9);
-      randInd2 = Math.floor(Math.random() * 9);
-      oldPiece = newArray[randInd1];
-      newArray[randInd1] = newArray[randInd2];
-      newArray[randInd2] = oldPiece;
-      if (newArray[randInd1] != newArray[randInd2]) {
-        return newArray;
-      } else {
-        return switchRandom(newArray);
-      }
+    return puzzle;
+  }
+
+  generateDifferentPuzzle(repeatedPuzzle) {
+    let differentPuzzle = _.clone(repeatedPuzzle);
+    randomIndex1 = Math.floor(Math.random() * 9);
+    randomIndex2 = Math.floor(Math.random() * 9);
+    oldPiece = differentPuzzle[randomIndex1];
+    differentPuzzle[randomIndex1] = differentPuzzle[randomIndex2];
+    differentPuzzle[randomIndex2] = oldPiece;
+    if (differentPuzzle[randomIndex1] == differentPuzzle[randomIndex2]) {
+      differentPuzzle = this.generateDifferentPuzzle(repeatedPuzzle);
     }
+    return differentPuzzle;
+  }
+
+  startNextRound() {
+    let repeatedPuzzle = this.generatePuzzle();
+    let differentPuzzle = this.generateDifferentPuzzle(repeatedPuzzle);
+    let differentIndex = Math.floor(Math.random() * 4);
+    let puzzles = [];
     for (var i = 0; i < 4; i++) {
-      if (i != correct) {
-        lists.push(rightPuzzle);
+      if (i == differentIndex) {
+        puzzles.push(differentPuzzle);
       } else {
-        newArray = rightPuzzle.slice();
-        lists.push(switchRandom(newArray));
+        puzzles.push(repeatedPuzzle);
       }
     }
-    function getAll(y) {
-      return (
+    this.setState({ differentPuzzle, puzzles });
+  }
+
+  renderIcons(puzzle) {
+    return _.map(puzzle, (icon) => {
+      return(
         <View style={styles.smallInnerBox}>
           <Text style={styles.smallSymbol}>
-            {y}
+            {icon}
           </Text>
         </View>
       );
-    }
-    return (
-      <View style={styles.choices}>
-        <View onPress={this.check} style={styles.smallBox}>
-          {lists[0].map(getAll)}
-        </View>
-        <View onPress={this.check} style={styles.smallBox}>
-          {lists[1].map(getAll)}
-        </View>
-        <View onPress={this.check} style={styles.smallBox}>
-          {lists[2].map(getAll)}
-        </View>
-        <View onPress={this.check} style={styles.smallBox}>
-          {lists[3].map(getAll)}
-        </View>
-      </View>
-    );
+    });
   }
+
+  renderPuzzles() {
+    return _.map(this.state.puzzles, (puzzle) => {
+      return (
+        <TouchableOpacity onPress={() => {this.onPuzzleClick(puzzle)}} style={styles.smallBox}>
+          {this.renderIcons(puzzle)}
+        </TouchableOpacity>
+      );
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        {/*<Text onPress={this.onPressTitle}>Hello World!</Text>*/}
-        <Button onPress={this.startGame} title="Start" />
-        {this.mapThroughSmall()}
+        <Button onPress={this.startNextRound} title="Start" />
+        <View style={styles.choices}>
+          {this.renderPuzzles()}
+        </View>
       </View>
     );
   }

@@ -18,28 +18,61 @@ const allSymbols = [
   '\u2368'
 ];
 
+var timer;
+
 export default class App extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.onPuzzleClick = this.onPuzzleClick.bind(this);
+    this.restartGame = this.restartGame.bind(this);
+    this.restartTimer = this.restartTimer.bind(this);
     this.startNextRound = this.startNextRound.bind(this);
 
     this.state = {
       differentPuzzle: null,
+      gameOver: false,
       puzzles: [],
+      score: 0,
+      time: 30,
     }
   }
 
   componentDidMount() {
+    this.restartGame();
+  }
+
+  restartGame() {
+    this.setState({gameOver: false, score: 0, time: 30});
     this.startNextRound();
   }
 
   onPuzzleClick(puzzle) {
-    if (puzzle == this.state.differentPuzzle) {
+    const { differentPuzzle, gameOver, score } = this.state;
+    if (gameOver) return;
+    if (puzzle == differentPuzzle) {
+      this.setState({score: score + 1});
       this.startNextRound();
+    } else {
+      if (score - 2 <= 0) {
+        this.setState({score: 0});
+      } else {
+        this.setState({score: score - 2});
+      }
     }
+  }
+
+  restartTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      const { time } = this.state;
+      if (time - 1 == 0) {
+        clearInterval(timer);
+        this.setState({gameOver: true});
+      }
+      this.setState({time: time - 1});
+    }, 1000);
   }
 
   generatePuzzle() {
@@ -65,6 +98,7 @@ export default class App extends React.Component {
   }
 
   startNextRound() {
+    this.restartTimer();
     let repeatedPuzzle = this.generatePuzzle();
     let differentPuzzle = this.generateDifferentPuzzle(repeatedPuzzle);
     let differentIndex = Math.floor(Math.random() * 4);
@@ -80,10 +114,10 @@ export default class App extends React.Component {
   }
 
   renderIcons(puzzle) {
-    return _.map(puzzle, (icon) => {
+    return _.map(puzzle, (icon, index) => {
       return(
-        <View style={styles.smallInnerBox}>
-          <Text style={styles.smallSymbol}>
+        <View key={index} style={styles.smallInnerBox}>
+          <Text style={styles.symbol}>
             {icon}
           </Text>
         </View>
@@ -92,22 +126,46 @@ export default class App extends React.Component {
   }
 
   renderPuzzles() {
-    return _.map(this.state.puzzles, (puzzle) => {
+    return _.map(this.state.puzzles, (puzzle, index) => {
       return (
-        <TouchableOpacity onPress={() => {this.onPuzzleClick(puzzle)}} style={styles.smallBox}>
+        <TouchableOpacity key={index} onPress={() => {this.onPuzzleClick(puzzle)}} style={styles.puzzleBox}>
           {this.renderIcons(puzzle)}
         </TouchableOpacity>
       );
     });
   }
 
+  renderHeader() {
+    return (
+      <View style={styles.header}>
+        <Text style={styles.score}>
+          Time: {this.state.time}
+        </Text>
+        <Text style={styles.score}>
+          Score: {this.state.score}
+        </Text>
+      </View>
+    );
+  }
+
+  renderActions() {
+    if (this.state.gameOver) {
+      return (
+        <View style={styles.actions}>
+          <Button style={styles.actionButton} onPress={this.restartGame} title="Play Again" />
+        </View>
+      );
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Button onPress={this.startNextRound} title="Start" />
+        {this.renderHeader()}
         <View style={styles.choices}>
           {this.renderPuzzles()}
         </View>
+        {this.renderActions()}
       </View>
     );
   }
@@ -121,27 +179,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginTop: 50
   },
-  mainBox: {
-    height: 300,
-    width: 300,
-    backgroundColor: 'blue',
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  box: {
-    height: 100,
-    width: 100,
-    backgroundColor: 'red',
-    borderWidth: 1,
-    borderColor: 'black',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   smallInnerBox: {
-    height: 25,
-    width: 25,
+    height: 50,
+    width: 50,
     backgroundColor: 'red',
     borderWidth: 1,
     borderColor: 'black',
@@ -150,16 +190,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  smallBox: {
-    height: 75,
-    width: 75,
+  puzzleBox: {
+    height: 150,
+    width: 150,
     backgroundColor: 'blue',
     display: 'flex',
     flexWrap: 'wrap',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     margin: 10
   },
   symbol: {
-    fontSize: 70,
+    fontSize: 40,
     backgroundColor: 'transparent'
   },
   smallSymbol: {
@@ -168,6 +211,27 @@ const styles = StyleSheet.create({
   },
   choices: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  header: {
+    height: 40,
+    width: 320,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  score: {
+    fontSize: 20
+  },
+  actions: {
+    height: 40,
+    width: 320
+  },
+  actionButton: {
+    backgroundColor: 'purple',
+    borderColor: 'black',
+    borderWidth: 1,
   }
 });

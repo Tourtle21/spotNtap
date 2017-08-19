@@ -1,12 +1,14 @@
 import React from 'react';
+import ActionButton from './app/components/ActionButton.js';
+import Game from './app/components/Game.js';
+import Scoreboard from './app/components/Scoreboard.js';
 import {
   StyleSheet,
-  Text,
   View,
-  Button,
-  TouchableOpacity,
 } from 'react-native';
+
 var _ = require('lodash');
+var timer;
 
 const allSymbols = [
   '\u07f7',
@@ -18,15 +20,13 @@ const allSymbols = [
   '\u2368'
 ];
 
-var timer;
-
 export default class App extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.onPuzzleClick = this.onPuzzleClick.bind(this);
-    this.restartGame = this.restartGame.bind(this);
+    this.onRestart = this.onRestart.bind(this);
     this.restartTimer = this.restartTimer.bind(this);
     this.startNextRound = this.startNextRound.bind(this);
 
@@ -35,16 +35,28 @@ export default class App extends React.Component {
       gameOver: false,
       puzzles: [],
       score: 0,
-      time: 30,
+      time: 30
     }
   }
 
   componentDidMount() {
-    this.restartGame();
+    this.startNextRound();
   }
 
-  restartGame() {
-    this.setState({gameOver: false, score: 0, time: 30});
+  restartTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      const { time } = this.state;
+      if (time - 1 == 0) {
+        clearInterval(timer);
+        this.setState({ gameOver: true });
+      }
+      this.setState({ time: time - 1});
+    }, 1000);
+  }
+
+  onRestart() {
+    this.setState({ gameOver: false, score: 0, time: 30 });
     this.startNextRound();
   }
 
@@ -61,18 +73,6 @@ export default class App extends React.Component {
         this.setState({score: score - 2});
       }
     }
-  }
-
-  restartTimer() {
-    clearInterval(timer);
-    timer = setInterval(() => {
-      const { time } = this.state;
-      if (time - 1 == 0) {
-        clearInterval(timer);
-        this.setState({gameOver: true});
-      }
-      this.setState({time: time - 1});
-    }, 1000);
   }
 
   generatePuzzle() {
@@ -113,59 +113,24 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
-  renderIcons(puzzle) {
-    return _.map(puzzle, (icon, index) => {
-      return(
-        <View key={index} style={styles.smallInnerBox}>
-          <Text style={styles.symbol}>
-            {icon}
-          </Text>
-        </View>
-      );
-    });
-  }
-
-  renderPuzzles() {
-    return _.map(this.state.puzzles, (puzzle, index) => {
-      return (
-        <TouchableOpacity key={index} onPress={() => {this.onPuzzleClick(puzzle)}} style={styles.puzzleBox}>
-          {this.renderIcons(puzzle)}
-        </TouchableOpacity>
-      );
-    });
-  }
-
-  renderHeader() {
-    return (
-      <View style={styles.header}>
-        <Text style={styles.score}>
-          Time: {this.state.time}
-        </Text>
-        <Text style={styles.score}>
-          Score: {this.state.score}
-        </Text>
-      </View>
-    );
-  }
-
-  renderActions() {
-    if (this.state.gameOver) {
-      return (
-        <View style={styles.actions}>
-          <Button style={styles.actionButton} onPress={this.restartGame} title="Play Again" />
-        </View>
-      );
-    }
-  }
-
   render() {
     return (
       <View style={styles.container}>
-        {this.renderHeader()}
-        <View style={styles.choices}>
-          {this.renderPuzzles()}
-        </View>
-        {this.renderActions()}
+        <Scoreboard
+          onGameOver={this.onGameOver}
+          onTick={this.onTick}
+          score={this.state.score}
+          time={this.state.time}
+        />
+        <Game
+          differentPuzzle={this.state.differentPuzzle}
+          gameOver={this.state.gameOver}
+          onPuzzleClick={this.onPuzzleClick}
+          puzzles={this.state.puzzles}
+        />
+        <ActionButton
+          onRestart={this.onRestart}
+        />
       </View>
     );
   }
@@ -178,60 +143,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap',
     marginTop: 50
-  },
-  smallInnerBox: {
-    height: 50,
-    width: 50,
-    backgroundColor: 'red',
-    borderWidth: 1,
-    borderColor: 'black',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  puzzleBox: {
-    height: 150,
-    width: 150,
-    backgroundColor: 'blue',
-    display: 'flex',
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10
-  },
-  symbol: {
-    fontSize: 40,
-    backgroundColor: 'transparent'
-  },
-  smallSymbol: {
-    fontSize: 17.5,
-    backgroundColor: 'transparent'
-  },
-  choices: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  header: {
-    height: 40,
-    width: 320,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  score: {
-    fontSize: 20
-  },
-  actions: {
-    height: 40,
-    width: 320
-  },
-  actionButton: {
-    backgroundColor: 'purple',
-    borderColor: 'black',
-    borderWidth: 1,
   }
 });

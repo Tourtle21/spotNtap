@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Button, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 export default class ActionButton extends React.Component {
   constructor(props) {
@@ -13,7 +9,9 @@ export default class ActionButton extends React.Component {
   render() {
     return (
       <View style={styles.actions}>
-        <Button style={styles.actionButton} onPress={this.props.onRestart} title="Play Again" />
+        <TouchableOpacity onPress={this.props.onRestart} title="Play Again">
+          <Text style={styles.actionButton}>Play Again</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -21,12 +19,14 @@ export default class ActionButton extends React.Component {
 
 const styles = StyleSheet.create({
   actions: {
-    height: 40,
-    width: 320
+    width: '100%',
+    paddingTop: 30
   },
   actionButton: {
-    backgroundColor: 'purple',
-    borderColor: 'black',
-    borderWidth: 1,
+    backgroundColor: 'transparent',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#E3E3E3',
+    textAlign: 'center'
   }
 });

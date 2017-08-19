@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default class Scoreboard extends React.Component {
   constructor(props) {
@@ -14,7 +10,7 @@ export default class Scoreboard extends React.Component {
     const { score, time } = this.props;
     return (
       <View style={styles.scoreboard}>
-        <Text style={styles.score}>
+        <Text style={styles.time}>
           Time: {time}
         </Text>
         <Text style={styles.score}>
@@ -27,13 +23,25 @@ export default class Scoreboard extends React.Component {
 
 const styles = StyleSheet.create({
   scoreboard: {
-    height: 40,
-    width: 320,
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingBottom: 30
+  },
+  time: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#E3E3E3',
+    backgroundColor: 'transparent',
+    width: '50%',
+    textAlign: 'center'
   },
   score: {
-    fontSize: 20
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#E3E3E3',
+    backgroundColor: 'transparent',
+    width: '50%',
+    textAlign: 'center'
   }
 });

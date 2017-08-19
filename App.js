@@ -2,26 +2,14 @@ import React from 'react';
 import ActionButton from './app/components/ActionButton.js';
 import Game from './app/components/Game.js';
 import Scoreboard from './app/components/Scoreboard.js';
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 
 var _ = require('lodash');
 var timer;
 
-const allSymbols = [
-  '\u07f7',
-  '\u2605',
-  '\u265E',
-  '\u262D',
-  '\u221E',
-  '\u266B',
-  '\u2368'
-];
+const allSymbols = ['\u07f7', '\u2368'];
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -36,7 +24,7 @@ export default class App extends React.Component {
       puzzles: [],
       score: 0,
       time: 30
-    }
+    };
   }
 
   componentDidMount() {
@@ -51,7 +39,7 @@ export default class App extends React.Component {
         clearInterval(timer);
         this.setState({ gameOver: true });
       }
-      this.setState({ time: time - 1});
+      this.setState({ time: time - 1 });
     }, 1000);
   }
 
@@ -64,13 +52,13 @@ export default class App extends React.Component {
     const { differentPuzzle, gameOver, score } = this.state;
     if (gameOver) return;
     if (puzzle == differentPuzzle) {
-      this.setState({score: score + 1});
+      this.setState({ score: score + 1 });
       this.startNextRound();
     } else {
       if (score - 2 <= 0) {
-        this.setState({score: 0});
+        this.setState({ score: 0 });
       } else {
-        this.setState({score: score - 2});
+        this.setState({ score: score - 2 });
       }
     }
   }
@@ -115,33 +103,26 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Scoreboard
-          onGameOver={this.onGameOver}
-          onTick={this.onTick}
-          score={this.state.score}
-          time={this.state.time}
-        />
+      <Image source={require('./app/images/bkgnd.png')} style={styles.backgroundImage}>
+        <Scoreboard onGameOver={this.onGameOver} onTick={this.onTick} score={this.state.score} time={this.state.time} />
         <Game
           differentPuzzle={this.state.differentPuzzle}
           gameOver={this.state.gameOver}
           onPuzzleClick={this.onPuzzleClick}
           puzzles={this.state.puzzles}
         />
-        <ActionButton
-          onRestart={this.onRestart}
-        />
-      </View>
+        <ActionButton onRestart={this.onRestart} />
+      </Image>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    marginTop: 50
+    resizeMode: 'cover',
+    paddingTop: 50
   }
 });

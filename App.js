@@ -2,7 +2,7 @@ import React from 'react';
 import ActionButton from './app/components/ActionButton.js';
 import Game from './app/components/Game.js';
 import Scoreboard from './app/components/Scoreboard.js';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 
 var _ = require('lodash');
 var timer;
@@ -20,15 +20,14 @@ export default class App extends React.Component {
 
     this.state = {
       differentPuzzle: null,
+      difficulty: 0,
       gameOver: false,
+      highScore: 0,
+      page: 'menu',
       puzzles: [],
       score: 0,
       time: 30
     };
-  }
-
-  componentDidMount() {
-    this.startNextRound();
   }
 
   restartTimer() {
@@ -44,7 +43,7 @@ export default class App extends React.Component {
   }
 
   onRestart() {
-    this.setState({ gameOver: false, score: 0, time: 30 });
+    this.setState({ gameOver: false, page: 'game', score: 0, time: 30 });
     this.startNextRound();
   }
 
@@ -101,9 +100,20 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
-  render() {
+  renderPage() {
+    const { page } = this.state;
+    if (page == 'menu') {
+      return (
+        <View style={styles.menu}>
+          <Text style={styles.title}>Spot N Tap</Text>
+          <TouchableOpacity onPress={this.onRestart} title='Start Game'>
+            <Text style={styles.menuItem}>Start Game</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
     return (
-      <Image source={require('./app/images/bkgnd.png')} style={styles.backgroundImage}>
+      <View>
         <Scoreboard onGameOver={this.onGameOver} onTick={this.onTick} score={this.state.score} time={this.state.time} />
         <Game
           differentPuzzle={this.state.differentPuzzle}
@@ -112,6 +122,14 @@ export default class App extends React.Component {
           puzzles={this.state.puzzles}
         />
         <ActionButton onRestart={this.onRestart} />
+      </View>
+    );
+  }
+
+  render() {
+    return (
+      <Image source={require('./app/images/bkgnd.png')} style={styles.backgroundImage}>
+        {this.renderPage()}
       </Image>
     );
   }
@@ -124,5 +142,22 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     paddingTop: 50
+  },
+  menu: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingTop: 50
+  },
+  menuItem: {
+    color: '#E3E3E3',
+    fontSize: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: '#DDAA00'
+  },
+  title: {
+    color: '#E3E3E3',
+    fontSize: 50,
+    fontWeight: '600'
   }
 });

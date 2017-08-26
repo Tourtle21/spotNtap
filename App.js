@@ -1,8 +1,9 @@
 import React from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import ActionButton from './app/components/ActionButton.js';
 import Game from './app/components/Game.js';
 import Scoreboard from './app/components/Scoreboard.js';
-import { StyleSheet, View, Image } from 'react-native';
+import { AsyncStorage, StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 
 var _ = require('lodash');
 var timer;
@@ -31,7 +32,10 @@ export default class App extends React.Component {
 
     this.state = {
       differentPuzzle: null,
+      difficulty: 0,
       gameOver: false,
+      highScore: 0,
+      page: 'menu',
       puzzles: [],
       score: 0,
       time: 30
@@ -39,23 +43,27 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.startNextRound();
+    AsyncStorage.getItem('highScore').then((value) => {
+      this.setState({ highScore: Number(value) || 0 });
+    }).done();
   }
 
   restartTimer() {
     clearInterval(timer);
     timer = setInterval(() => {
-      const { time } = this.state;
+      const { highScore, score, time } = this.state;
       if (time - 1 == 0) {
         clearInterval(timer);
-        this.setState({ gameOver: true });
+        let newHighScore = score > highScore ? score : highScore;
+        AsyncStorage.setItem('highScore', highScore.toString());
+        this.setState({ gameOver: true, highScore: newHighScore });
       }
       this.setState({ time: time - 1 });
     }, 1000);
   }
 
   onRestart() {
-    this.setState({ gameOver: false, score: 0, time: 30 });
+    this.setState({ gameOver: false, page: 'game', score: 0, time: 30 });
     this.startNextRound();
   }
 
@@ -112,9 +120,19 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
-  render() {
+  renderPage() {
+    if (this.state.page == 'menu') {
+      return (
+        <View style={styles.menu}>
+          <Text style={styles.title}>Spot N Tap</Text>
+          <TouchableOpacity onPress={this.onRestart} title='Start Game'>
+            <Ionicons name={'ios-play'} style={styles.menuItem} />
+          </TouchableOpacity>
+        </View>
+      );
+    }
     return (
-      <Image source={require('./app/images/bkgnd.png')} style={styles.backgroundImage}>
+      <View>
         <Scoreboard onGameOver={this.onGameOver} onTick={this.onTick} score={this.state.score} time={this.state.time} />
         <Game
           differentPuzzle={this.state.differentPuzzle}
@@ -123,6 +141,15 @@ export default class App extends React.Component {
           puzzles={this.state.puzzles}
         />
         <ActionButton onRestart={this.onRestart} />
+        <Text style={styles.highScore}>High Score: {this.state.highScore}</Text>
+      </View>
+    );
+  }
+
+  render() {
+    return (
+      <Image source={require('./app/images/bkgnd.png')} style={styles.backgroundImage}>
+        {this.renderPage()}
       </Image>
     );
   }
@@ -135,5 +162,30 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     paddingTop: 50
+  },
+  highScore: {
+    backgroundColor: 'transparent',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#E3E3E3',
+    textAlign: 'center',
+    paddingTop: 20
+  },
+  menu: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingTop: 50
+  },
+  menuItem: {
+    color: '#E3E3E3',
+    fontSize: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: '#DDAA00'
+  },
+  title: {
+    color: '#E3E3E3',
+    fontSize: 50,
+    fontWeight: '600'
   }
 });

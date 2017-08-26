@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 export default class ActionButton extends React.Component {
   constructor(props) {

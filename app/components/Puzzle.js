@@ -1,4 +1,5 @@
 import React from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 var _ = require('lodash');
 
@@ -13,9 +14,7 @@ export default class Puzzle extends React.Component {
     return _.map(puzzle, (icon, index) => {
       return (
         <View key={index} style={styles.smallInnerBox}>
-          <Text style={styles.symbol}>
-            {icon}
-          </Text>
+          <Ionicons name={icon} style={styles.icon} />
         </View>
       );
     });
@@ -49,17 +48,17 @@ const styles = StyleSheet.create({
     padding: 10
   },
   smallInnerBox: {
-    flexBasis: '33%',
-    height: 'auto',
+    flexBasis: '33.33%',
+    height: '33.33%',
     backgroundColor: '#EEEEEE',
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#1B1464',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
   },
-  symbol: {
+  icon: {
     fontSize: 40,
     backgroundColor: 'transparent',
     color: '#1B1464'

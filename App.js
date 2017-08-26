@@ -7,7 +7,18 @@ import { StyleSheet, View, Image } from 'react-native';
 var _ = require('lodash');
 var timer;
 
-const allSymbols = ['\u07f7', '\u2368'];
+const allSymbols = [
+  'ios-pizza',
+  'ios-bug',
+  'ios-disc',
+  'ios-planet',
+  'ios-football',
+  'ios-paw',
+  'ios-alarm',
+  'ios-heart',
+  'ios-home',
+  'ios-star'
+];
 
 export default class App extends React.Component {
   constructor(props) {

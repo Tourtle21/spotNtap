@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import React from "react";
+import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 
 export default class ActionButton extends React.Component {
   constructor(props) {
@@ -19,14 +19,23 @@ export default class ActionButton extends React.Component {
 
 const styles = StyleSheet.create({
   actions: {
-    width: '100%',
-    paddingTop: 30
+    width: "100%",
+    paddingTop: 30,
+    display: "flex",
+    alignItems: "center"
   },
   actionButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: "#1b1464",
+    borderWidth: 1,
+    borderColor: "#efefef",
+    borderRadius: 2,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    width: 180,
     fontSize: 20,
-    fontWeight: '600',
-    color: '#E3E3E3',
-    textAlign: 'center'
+    letterSpacing: 1,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#E3E3E3"
   }
 });

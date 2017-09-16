@@ -1,24 +1,24 @@
-import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import ActionButton from './app/components/ActionButton.js';
-import Game from './app/components/Game.js';
-import Scoreboard from './app/components/Scoreboard.js';
-import { AsyncStorage, StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
+import React from "react";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import ActionButton from "./app/components/ActionButton.js";
+import Game from "./app/components/Game.js";
+import Scoreboard from "./app/components/Scoreboard.js";
+import { AsyncStorage, StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
 
-var _ = require('lodash');
+var _ = require("lodash");
 var timer;
 
 const allSymbols = [
-  'ios-pizza',
-  'ios-bug',
-  'ios-disc',
-  'ios-planet',
-  'ios-football',
-  'ios-paw',
-  'ios-alarm',
-  'ios-heart',
-  'ios-home',
-  'ios-star'
+  "ios-pizza",
+  "ios-bug",
+  "ios-disc",
+  "ios-planet",
+  "ios-football",
+  "ios-paw",
+  "ios-alarm",
+  "ios-heart",
+  "ios-home",
+  "ios-star"
 ];
 
 export default class App extends React.Component {
@@ -35,7 +35,7 @@ export default class App extends React.Component {
       difficulty: 1,
       gameOver: false,
       highScore: 0,
-      page: 'menu',
+      page: "menu",
       puzzles: [],
       score: 0,
       time: 30
@@ -43,9 +43,11 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    AsyncStorage.getItem('highScore').then((value) => {
-      this.setState({ highScore: Number(value) || 0 });
-    }).done();
+    AsyncStorage.getItem("highScore")
+      .then(value => {
+        this.setState({ highScore: Number(value) || 0 });
+      })
+      .done();
   }
 
   restartTimer() {
@@ -55,7 +57,7 @@ export default class App extends React.Component {
       if (time - 1 == 0) {
         clearInterval(timer);
         let newHighScore = score > highScore ? score : highScore;
-        AsyncStorage.setItem('highScore', highScore.toString());
+        AsyncStorage.setItem("highScore", highScore.toString());
         this.setState({ gameOver: true, highScore: newHighScore });
       }
       this.setState({ time: time - 1 });
@@ -63,7 +65,7 @@ export default class App extends React.Component {
   }
 
   onRestart() {
-    this.setState({ gameOver: false, page: 'game', score: 0, time: 30 });
+    this.setState({ gameOver: false, page: "game", score: 0, time: 30 });
     this.restartTimer();
     this.startNextRound();
   }
@@ -131,29 +133,38 @@ export default class App extends React.Component {
 
   renderPage() {
     const { difficulty } = this.state;
-    if (this.state.page == 'menu') {
+    if (this.state.page == "menu") {
       return (
         <View style={styles.menu}>
-          <View style={styles.logoWrapper}>
-            <Image source={require('./app/images/Spot&TapLogo.png')} style={styles.logo} />
+          <Image source={require("./app/images/Spot&TapLogo.png")} style={styles.logo} />
+          <View style={styles.options}>
+            <TouchableOpacity
+              onPress={() => {
+                this.changeDifficulty(1);
+              }}
+              title="Easy"
+            >
+              <Text style={difficulty == 1 ? styles.selectedDifficulty : styles.difficulty}>Easy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                this.changeDifficulty(4);
+              }}
+              title="Normal"
+            >
+              <Text style={difficulty == 4 ? styles.selectedDifficulty : styles.difficulty}>Normal</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                this.changeDifficulty(9);
+              }}
+              title="Hard"
+            >
+              <Text style={difficulty == 9 ? styles.selectedDifficulty : styles.difficulty}>Hard</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => {this.changeDifficulty(1)}} title='Easy'>
-            <Text style={difficulty == 1 ? styles.selectedDifficulty : styles.difficulty}>
-              Easy
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.changeDifficulty(4)}} title='Normal'>
-            <Text style={difficulty == 4 ? styles.selectedDifficulty : styles.difficulty}>
-              Normal
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.changeDifficulty(9)}} title='Hard'>
-            <Text style={difficulty == 9 ? styles.selectedDifficulty : styles.difficulty}>
-              Hard
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.onRestart} title='Start Game'>
-            <Ionicons name={'ios-play'} style={styles.startButton} />
+          <TouchableOpacity onPress={this.onRestart} title="Start Game" style={styles.startButton}>
+            <Ionicons name={"ios-play"} style={styles.playIcon} />
           </TouchableOpacity>
         </View>
       );
@@ -176,7 +187,7 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <Image source={require('./app/images/bkgnd.png')} style={styles.backgroundImage}>
+      <Image source={require("./app/images/bkgnd.png")} style={styles.backgroundImage}>
         {this.renderPage()}
       </Image>
     );
@@ -185,48 +196,62 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   backgroundImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     flex: 1,
-    resizeMode: 'cover',
-    paddingTop: 50
-  },
-  difficulty: {
-    color: '#888888',
-    fontSize: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-  },
-  highScore: {
-    backgroundColor: 'transparent',
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#E3E3E3',
-    textAlign: 'center',
-    paddingTop: 20
+    resizeMode: "cover",
+    paddingVertical: 80
   },
   menu: {
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    paddingTop: 50,
+    display: "flex",
+    height: "100%",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "transparent"
   },
-  selectedDifficulty: {
-    color: '#E3E3E3',
-    fontSize: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-  },
-  startButton: {
-    color: '#E3E3E3',
-    fontSize: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    backgroundColor: '#DDAA00'
+  options: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: 30
   },
   logo: {
-    maxWidth: '100%'
+    width: 250,
+    height: 106,
+    resizeMode: "contain"
   },
-  logoWrapper: {
-    width: 300
+  difficulty: {
+    color: "#EFEFEF",
+    opacity: 0.75,
+    fontSize: 30,
+    paddingTop: 20
+  },
+  selectedDifficulty: {
+    color: "#EFEFEF",
+    opacity: 1,
+    fontSize: 30,
+    paddingTop: 20
+  },
+  startButton: {
+    marginTop: 20,
+    width: 180,
+    height: 50,
+    borderRadius: 2,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#efa121"
+  },
+  playIcon: {
+    fontSize: 30,
+    color: "#FFFFFF"
+  },
+  highScore: {
+    backgroundColor: "transparent",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#E3E3E3",
+    textAlign: "center",
+    paddingTop: 20
   }
 });

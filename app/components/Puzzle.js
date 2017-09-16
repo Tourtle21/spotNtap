@@ -10,11 +10,47 @@ export default class Puzzle extends React.Component {
     super(props);
   }
 
+  innerBoxStyle(height) {
+    return {
+      flexBasis: height,
+      height: height,
+      backgroundColor: '#EEEEEE',
+      borderWidth: 1,
+      borderColor: '#1B1464',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  }
+
+  iconStyle(fontSize) {
+    return {
+      fontSize: fontSize,
+      backgroundColor: 'transparent',
+      color: '#1B1464'
+    }
+  }
+
   renderPuzzle(puzzle) {
+    var height = '100%';
+    var fontSize = 120;
+    switch (this.props.difficulty) {
+      case 4:
+        height = '50%';
+        fontSize = 75;
+        break;
+      case 9:
+        height = '33.33%';
+        fontSize = 40;
+        break;
+      default:
+        break;
+    }
     return _.map(puzzle, (icon, index) => {
       return (
-        <View key={index} style={styles.smallInnerBox}>
-          <Ionicons name={icon} style={styles.icon} />
+        <View key={index} style={this.innerBoxStyle(height)}>
+          <Ionicons name={icon} style={this.iconStyle(fontSize)} />
         </View>
       );
     });
@@ -47,20 +83,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10
   },
-  smallInnerBox: {
-    flexBasis: '33.33%',
-    height: '33.33%',
-    backgroundColor: '#EEEEEE',
-    borderWidth: 1,
-    borderColor: '#1B1464',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  icon: {
-    fontSize: 40,
-    backgroundColor: 'transparent',
-    color: '#1B1464'
-  }
 });

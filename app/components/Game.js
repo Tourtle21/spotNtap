@@ -15,6 +15,7 @@ export default class Game extends React.Component {
     return _.map(this.props.puzzles, (puzzle, index) => {
       return (
         <Puzzle
+          difficulty={this.props.difficulty}
           key={index}
           onPuzzleClick={this.props.onPuzzleClick}
           puzzle={puzzle}

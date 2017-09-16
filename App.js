@@ -32,7 +32,7 @@ export default class App extends React.Component {
 
     this.state = {
       differentPuzzle: null,
-      difficulty: 0,
+      difficulty: 1,
       gameOver: false,
       highScore: 0,
       page: 'menu',
@@ -64,6 +64,7 @@ export default class App extends React.Component {
 
   onRestart() {
     this.setState({ gameOver: false, page: 'game', score: 0, time: 30 });
+    this.restartTimer();
     this.startNextRound();
   }
 
@@ -84,7 +85,7 @@ export default class App extends React.Component {
 
   generatePuzzle() {
     let puzzle = [];
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < this.state.difficulty; i++) {
       randInd = Math.floor(Math.random() * allSymbols.length);
       puzzle.push(allSymbols[randInd]);
     }
@@ -92,20 +93,24 @@ export default class App extends React.Component {
   }
 
   generateDifferentPuzzle(repeatedPuzzle) {
-    let differentPuzzle = _.clone(repeatedPuzzle);
-    randomIndex1 = Math.floor(Math.random() * 9);
-    randomIndex2 = Math.floor(Math.random() * 9);
-    oldPiece = differentPuzzle[randomIndex1];
-    differentPuzzle[randomIndex1] = differentPuzzle[randomIndex2];
-    differentPuzzle[randomIndex2] = oldPiece;
-    if (differentPuzzle[randomIndex1] == differentPuzzle[randomIndex2]) {
-      differentPuzzle = this.generateDifferentPuzzle(repeatedPuzzle);
+    var differentPuzzle = _.clone(repeatedPuzzle);
+    if (this.state.difficulty == 1) {
+      let remainingSymbols = _.without(allSymbols, repeatedPuzzle[0]);
+      differentPuzzle = [remainingSymbols[Math.floor(Math.random() * remainingSymbols.length)]];
+    } else {
+      var randomIndex1 = Math.floor(Math.random() * this.state.difficulty);
+      var randomIndex2 = Math.floor(Math.random() * this.state.difficulty);
+      var oldPiece = differentPuzzle[randomIndex1];
+      differentPuzzle[randomIndex1] = differentPuzzle[randomIndex2];
+      differentPuzzle[randomIndex2] = oldPiece;
+      if (differentPuzzle[randomIndex1] == differentPuzzle[randomIndex2]) {
+        differentPuzzle = this.generateDifferentPuzzle(repeatedPuzzle);
+      }
     }
     return differentPuzzle;
   }
 
   startNextRound() {
-    this.restartTimer();
     let repeatedPuzzle = this.generatePuzzle();
     let differentPuzzle = this.generateDifferentPuzzle(repeatedPuzzle);
     let differentIndex = Math.floor(Math.random() * 4);
@@ -120,13 +125,35 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
+  changeDifficulty(difficulty) {
+    this.setState({ difficulty });
+  }
+
   renderPage() {
+    const { difficulty } = this.state;
     if (this.state.page == 'menu') {
       return (
         <View style={styles.menu}>
-          <Text style={styles.title}>Spot N Tap</Text>
+          <View style={styles.logoWrapper}>
+            <Image source={require('./app/images/Spot&TapLogo.png')} style={styles.logo} />
+          </View>
+          <TouchableOpacity onPress={() => {this.changeDifficulty(1)}} title='Easy'>
+            <Text style={difficulty == 1 ? styles.selectedDifficulty : styles.difficulty}>
+              Easy
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.changeDifficulty(4)}} title='Normal'>
+            <Text style={difficulty == 4 ? styles.selectedDifficulty : styles.difficulty}>
+              Normal
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.changeDifficulty(9)}} title='Hard'>
+            <Text style={difficulty == 9 ? styles.selectedDifficulty : styles.difficulty}>
+              Hard
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={this.onRestart} title='Start Game'>
-            <Ionicons name={'ios-play'} style={styles.menuItem} />
+            <Ionicons name={'ios-play'} style={styles.startButton} />
           </TouchableOpacity>
         </View>
       );
@@ -136,6 +163,7 @@ export default class App extends React.Component {
         <Scoreboard onGameOver={this.onGameOver} onTick={this.onTick} score={this.state.score} time={this.state.time} />
         <Game
           differentPuzzle={this.state.differentPuzzle}
+          difficulty={this.state.difficulty}
           gameOver={this.state.gameOver}
           onPuzzleClick={this.onPuzzleClick}
           puzzles={this.state.puzzles}
@@ -163,6 +191,12 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     paddingTop: 50
   },
+  difficulty: {
+    color: '#888888',
+    fontSize: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+  },
   highScore: {
     backgroundColor: 'transparent',
     fontSize: 20,
@@ -174,18 +208,25 @@ const styles = StyleSheet.create({
   menu: {
     alignItems: 'center',
     backgroundColor: 'transparent',
-    paddingTop: 50
+    paddingTop: 50,
   },
-  menuItem: {
+  selectedDifficulty: {
+    color: '#E3E3E3',
+    fontSize: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+  },
+  startButton: {
     color: '#E3E3E3',
     fontSize: 30,
     paddingVertical: 10,
     paddingHorizontal: 30,
     backgroundColor: '#DDAA00'
   },
-  title: {
-    color: '#E3E3E3',
-    fontSize: 50,
-    fontWeight: '600'
+  logo: {
+    maxWidth: '100%'
+  },
+  logoWrapper: {
+    width: 300
   }
 });

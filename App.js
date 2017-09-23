@@ -3,6 +3,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import ActionButton from "./app/components/ActionButton.js";
 import Game from "./app/components/Game.js";
 import Scoreboard from "./app/components/Scoreboard.js";
+import Constants from "./app/Constants.js";
 import { AsyncStorage, StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
 
 var _ = require("lodash");
@@ -27,14 +28,17 @@ export default class App extends React.Component {
 
     this.onPuzzleClick = this.onPuzzleClick.bind(this);
     this.onRestart = this.onRestart.bind(this);
+    this.onReturnToMenu = this.onReturnToMenu.bind(this);
+    this.resetDefaults = this.resetDefaults.bind(this);
     this.restartTimer = this.restartTimer.bind(this);
     this.startNextRound = this.startNextRound.bind(this);
 
     this.state = {
       differentPuzzle: null,
-      difficulty: 1,
+      difficulty: Constants.EASY,
       gameOver: false,
       highScore: 0,
+      mode: "easy",
       page: "menu",
       puzzles: [],
       score: 0,
@@ -53,8 +57,8 @@ export default class App extends React.Component {
   restartTimer() {
     clearInterval(timer);
     timer = setInterval(() => {
-      const { highScore, score, time } = this.state;
-      if (time - 1 == 0) {
+      const { highScore, score, time } = _.clone(this.state);
+      if (time - 1 <= 0) {
         clearInterval(timer);
         let newHighScore = score > highScore ? score : highScore;
         AsyncStorage.setItem("highScore", highScore.toString());
@@ -64,24 +68,53 @@ export default class App extends React.Component {
     }, 1000);
   }
 
+  resetDefaults(page, callback) {
+    let time = this.state.mode == "endless" ? 10 : 30;
+    let difficulty = this.state.mode == "endless" ? Constants.EASY : _.clone(this.state.difficulty);
+    this.setState({
+      difficulty,
+      gameOver: false,
+      page: page,
+      score: 0,
+      time
+    }, function() {
+      if (page == "game") {
+        this.startNextRound();
+      }
+    });
+  }
+
   onRestart() {
-    this.setState({ gameOver: false, page: "game", score: 0, time: 30 });
+    this.resetDefaults("game");
     this.restartTimer();
-    this.startNextRound();
+  }
+
+  onReturnToMenu() {
+    this.resetDefaults("menu");
   }
 
   onPuzzleClick(puzzle) {
-    const { differentPuzzle, gameOver, score } = this.state;
+    const { differentPuzzle, difficulty, gameOver, mode, score, time } = _.clone(this.state);
     if (gameOver) return;
     if (puzzle == differentPuzzle) {
       this.setState({ score: score + 1 });
+      if (mode == "endless") {
+        this.setState({ time: time + Math.sqrt(difficulty) + 1 });
+        if ((score + 1) % 10 == 0 && difficulty < Constants.INSANE) {
+          this.setState({
+            difficulty: Math.pow(Math.sqrt(difficulty) + 1, 2)
+          }, function() {
+            this.startNextRound();
+          });
+          return;
+        }
+      }
       this.startNextRound();
     } else {
-      if (score - 2 <= 0) {
-        this.setState({ score: 0 });
-      } else {
-        this.setState({ score: score - 2 });
-      }
+      let newTime = time - Math.sqrt(difficulty);
+      this.setState({
+        time: newTime <= 0 ? 0 : newTime
+      });
     }
   }
 
@@ -127,40 +160,69 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
-  changeDifficulty(difficulty) {
-    this.setState({ difficulty });
+  changeDifficulty(difficulty, mode) {
+    this.setState({ difficulty, mode });
+  }
+
+  renderGameSection() {
+    if (this.state.gameOver) {
+      return (
+        <View>
+          <Text style={styles.highScore}>High Score: {this.state.highScore}</Text>
+          <ActionButton onPressFunction={this.onRestart} buttonText="Play Again" />
+        </View>
+      );
+    }
+
+    return (
+      <Game
+        differentPuzzle={this.state.differentPuzzle}
+        difficulty={this.state.difficulty}
+        gameOver={this.state.gameOver}
+        onPuzzleClick={this.onPuzzleClick}
+        puzzles={this.state.puzzles}
+      />
+    );
   }
 
   renderPage() {
-    const { difficulty } = this.state;
-    if (this.state.page == "menu") {
+    const { difficulty, mode, page } = this.state;
+    if (page == "menu") {
       return (
         <View style={styles.menu}>
           <Image source={require("./app/images/Spot&TapLogo.png")} style={styles.logo} />
           <View style={styles.options}>
             <TouchableOpacity
               onPress={() => {
-                this.changeDifficulty(1);
+                this.changeDifficulty(Constants.EASY, "easy");
               }}
               title="Easy"
             >
-              <Text style={difficulty == 1 ? styles.selectedDifficulty : styles.difficulty}>Easy</Text>
+              <Text style={mode == "easy" ? styles.selectedDifficulty : styles.difficulty}>Easy</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                this.changeDifficulty(4);
+                this.changeDifficulty(Constants.NORMAL, "normal");
               }}
               title="Normal"
             >
-              <Text style={difficulty == 4 ? styles.selectedDifficulty : styles.difficulty}>Normal</Text>
+              <Text style={mode == "normal" ? styles.selectedDifficulty : styles.difficulty}>Normal</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                this.changeDifficulty(9);
+                this.changeDifficulty(Constants.HARD, "hard");
               }}
               title="Hard"
             >
-              <Text style={difficulty == 9 ? styles.selectedDifficulty : styles.difficulty}>Hard</Text>
+              <Text style={mode == "hard" ? styles.selectedDifficulty : styles.difficulty}>Hard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                this.setState({ mode: "endless" });
+              }}
+              title="Endless"
+            >
+              <Text style={mode == "endless" ? styles.selectedDifficulty : styles.difficulty}>Endless</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={this.onRestart} title="Start Game" style={styles.startButton}>
@@ -171,16 +233,14 @@ export default class App extends React.Component {
     }
     return (
       <View>
-        <Scoreboard onGameOver={this.onGameOver} onTick={this.onTick} score={this.state.score} time={this.state.time} />
-        <Game
-          differentPuzzle={this.state.differentPuzzle}
-          difficulty={this.state.difficulty}
-          gameOver={this.state.gameOver}
-          onPuzzleClick={this.onPuzzleClick}
-          puzzles={this.state.puzzles}
+        <Scoreboard
+          onGameOver={this.onGameOver}
+          onTick={this.onTick}
+          score={this.state.score}
+          time={this.state.time}
         />
-        <ActionButton onRestart={this.onRestart} />
-        <Text style={styles.highScore}>High Score: {this.state.highScore}</Text>
+        {this.renderGameSection()}
+        <ActionButton onPressFunction={this.onReturnToMenu} buttonText="Main Menu" />
       </View>
     );
   }

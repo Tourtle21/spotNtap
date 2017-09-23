@@ -1,5 +1,6 @@
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Constants from '../Constants.js'
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 var _ = require('lodash');
 
@@ -36,13 +37,21 @@ export default class Puzzle extends React.Component {
     var height = '100%';
     var fontSize = 120;
     switch (this.props.difficulty) {
-      case 4:
+      case Constants.NORMAL:
         height = '50%';
         fontSize = 75;
         break;
-      case 9:
+      case Constants.HARD:
         height = '33.33%';
         fontSize = 40;
+        break;
+      case Constants.EXPERT:
+        height = '25%';
+        fontSize = 28;
+        break;
+      case Constants.INSANE:
+        height = '20%';
+        fontSize = 22;
         break;
       default:
         break;

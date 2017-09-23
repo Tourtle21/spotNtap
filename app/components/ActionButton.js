@@ -9,8 +9,8 @@ export default class ActionButton extends React.Component {
   render() {
     return (
       <View style={styles.actions}>
-        <TouchableOpacity onPress={this.props.onRestart} title="Play Again">
-          <Text style={styles.actionButton}>Play Again</Text>
+        <TouchableOpacity onPress={this.props.onPressFunction} title={this.props.buttonText}>
+          <Text style={styles.actionButton}>{this.props.buttonText}</Text>
         </TouchableOpacity>
       </View>
     );

@@ -46,22 +46,27 @@ export default class App extends React.Component {
     };
   }
 
-  componentDidMount() {
-    AsyncStorage.getItem("highScore")
-      .then(value => {
-        this.setState({ highScore: Number(value) || 0 });
-      })
-      .done();
-  }
-
   restartTimer() {
     clearInterval(timer);
     timer = setInterval(() => {
-      const { highScore, score, time } = _.clone(this.state);
+      const { highScore, mode, score, time } = _.clone(this.state);
       if (time - 1 <= 0) {
         clearInterval(timer);
         let newHighScore = score > highScore ? score : highScore;
-        AsyncStorage.setItem("highScore", highScore.toString());
+        switch (mode) {
+          case "easy":
+            AsyncStorage.setItem("easyHighScore", newHighScore.toString());
+            break;
+          case "normal":
+            AsyncStorage.setItem("normalHighScore", newHighScore.toString());
+            break;
+          case "hard":
+            AsyncStorage.setItem("hardHighScore", newHighScore.toString());
+            break;
+          default:
+            AsyncStorage.setItem("endlessHighScore", newHighScore.toString());
+            break;
+        }
         this.setState({ gameOver: true, highScore: newHighScore });
       }
       this.setState({ time: time - 1 });
@@ -162,6 +167,33 @@ export default class App extends React.Component {
 
   changeDifficulty(difficulty, mode) {
     this.setState({ difficulty, mode });
+    switch (mode) {
+      case "easy":
+        AsyncStorage.getItem("easyHighScore")
+          .then(value => {
+            console.log(value);
+            this.setState({ highScore: Number(value) || 0 });
+          }).done();
+        break;
+      case "normal":
+        AsyncStorage.getItem("normalHighScore")
+          .then(value => {
+            this.setState({ highScore: Number(value) || 0 });
+          }).done();
+        break;
+      case "hard":
+        AsyncStorage.getItem("hardHighScore")
+          .then(value => {
+            this.setState({ highScore: Number(value) || 0 });
+          }).done();
+        break;
+      default:
+        AsyncStorage.getItem("endlessHighScore")
+          .then(value => {
+            this.setState({ highScore: Number(value) || 0 });
+          }).done();
+        break;
+    }
   }
 
   renderGameSection() {

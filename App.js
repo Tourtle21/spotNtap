@@ -32,7 +32,7 @@ export default class App extends React.Component {
     this.resetDefaults = this.resetDefaults.bind(this);
     this.restartTimer = this.restartTimer.bind(this);
     this.startNextRound = this.startNextRound.bind(this);
-
+    this.switchBack = setInterval(function() {})
     this.state = {
       differentPuzzle: null,
       difficulty: Constants.EASY,
@@ -42,7 +42,8 @@ export default class App extends React.Component {
       page: "menu",
       puzzles: [],
       score: 0,
-      time: 30
+      time: 30,
+      incorrect: 'transparent'
     };
   }
 
@@ -117,8 +118,25 @@ export default class App extends React.Component {
       this.startNextRound();
     } else {
       let newTime = time - Math.sqrt(difficulty);
+      let alpha = 1
+      let that = this
+      clearInterval(this.switchBack);
+      this.switchBack = setInterval(function() {
+        alpha -= 0.1
+        console.log(alpha)
+        if (alpha <= 0.3) {
+          alpha = 0
+        }
+        that.setState({
+          incorrect: 'rgba(255, 0, 0, ' + alpha + ')'
+        })
+        if (alpha <= 0.3) {
+          clearInterval(that.switchBack)
+        }
+      }, 10)
       this.setState({
-        time: newTime <= 0 ? 0 : newTime
+        time: newTime <= 0 ? 0 : newTime,
+        incorrect: 'red'
       });
     }
   }
@@ -270,6 +288,7 @@ export default class App extends React.Component {
           onTick={this.onTick}
           score={this.state.score}
           time={this.state.time}
+          incorrect = {this.state.incorrect}
         />
         {this.renderGameSection()}
         <ActionButton onPressFunction={this.onReturnToMenu} buttonText="Main Menu" />

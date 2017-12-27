@@ -7,10 +7,10 @@ export default class Scoreboard extends React.Component {
   }
 
   render() {
-    const { score, time } = this.props;
+    const { score, time, incorrect} = this.props;
     return (
       <View style={styles.scoreboard}>
-        <Text style={styles.time}>
+        <Text style={{fontSize: 24, fontWeight: 'bold', color: '#E3E3E3', width: '50%', textAlign: 'center', backgroundColor: incorrect}}>
           Time: {time}
         </Text>
         <Text style={styles.score}>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   score: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#E3E3E3',
     backgroundColor: 'transparent',
     width: '50%',

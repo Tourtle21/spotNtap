@@ -1,0 +1,29 @@
+dependencies: \
+  /Users/Fragger/Documents/spotNtap/node_modules/react-native/Libraries/Image/RCTImageCache.m \
+  /Users/Fragger/Documents/spotNtap/node_modules/react-native/Libraries/Image/RCTImageCache.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTImageLoader.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBridge.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBridgeDelegate.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTJavaScriptLoader.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTDefines.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBridgeModule.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTFrameUpdate.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTInvalidating.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTResizeMode.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTConvert.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTAnimationType.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBorderStyle.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTLog.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTAssert.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTUtils.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTPointerEvents.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTTextDecorationLineType.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/yoga/Yoga.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/yoga/YGEnums.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/yoga/YGMacros.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTURLRequestHandler.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTURLRequestDelegate.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTNetworking.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTEventEmitter.h \
+  /Users/Fragger/Documents/spotNtap/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTNetworkTask.h \
+  /Users/Fragger/Documents/spotNtap/node_modules/react-native/Libraries/Image/RCTImageUtils.h

@@ -6,6 +6,7 @@ import Scoreboard from "./app/components/Scoreboard.js";
 import Constants from "./app/Constants.js";
 import { AsyncStorage, StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
 
+var Sound = require("react-native-sound");
 var _ = require("lodash");
 var timer;
 
@@ -47,11 +48,16 @@ export default class App extends React.Component {
     };
   }
 
+  componentDidMount() {
+    Sound.setCategory("Playback", true);
+  }
+
   restartTimer() {
     clearInterval(timer);
     timer = setInterval(() => {
       const { highScore, mode, score, time } = _.clone(this.state);
       if (time - 1 <= 0) {
+        this.playSound('end_of_game.wav');
         clearInterval(timer);
         let newHighScore = score > highScore ? score : highScore;
         switch (mode) {
@@ -96,11 +102,13 @@ export default class App extends React.Component {
   }
 
   onRestart() {
+    this.playSound('click_button.wav');
     this.resetDefaults("game");
     this.restartTimer();
   }
 
   onReturnToMenu() {
+    this.playSound('click_button.wav');
     this.resetDefaults("menu");
   }
 
@@ -108,6 +116,7 @@ export default class App extends React.Component {
     const { differentPuzzle, difficulty, gameOver, mode, score, time } = _.clone(this.state);
     if (gameOver) return;
     if (puzzle == differentPuzzle) {
+      this.playSound('correct2.wav');
       this.setState({ score: score + 1 });
       if (mode == "endless") {
         this.setState({ time: time + Math.sqrt(difficulty) + 1 });
@@ -125,6 +134,7 @@ export default class App extends React.Component {
       }
       this.startNextRound();
     } else {
+      this.playSound('wrong1.wav');
       let newTime = time - Math.sqrt(difficulty);
       let alpha = 1;
       let that = this;
@@ -190,7 +200,18 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
+  playSound(filename) {
+    var sound = new Sound(filename, Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error);
+      } else {
+        sound.play();
+      }
+    });
+  }
+
   changeDifficulty(difficulty, mode) {
+    this.playSound('click_button.wav');
     this.setState({ difficulty, mode });
     switch (mode) {
       case "easy":
@@ -278,7 +299,7 @@ export default class App extends React.Component {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                this.setState({ mode: "endless" });
+                this.changeDifficulty(Constants.ENDLESS, "endless");
               }}
               title="Endless"
             >

@@ -6,6 +6,7 @@ import Scoreboard from "./app/components/Scoreboard.js";
 import Constants from "./app/Constants.js";
 import { AsyncStorage, StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
 
+var Sound = require("react-native-sound");
 var _ = require("lodash");
 var timer;
 
@@ -32,7 +33,7 @@ export default class App extends React.Component {
     this.resetDefaults = this.resetDefaults.bind(this);
     this.restartTimer = this.restartTimer.bind(this);
     this.startNextRound = this.startNextRound.bind(this);
-
+    this.switchBack = setInterval(function() {});
     this.state = {
       differentPuzzle: null,
       difficulty: Constants.EASY,
@@ -42,8 +43,13 @@ export default class App extends React.Component {
       page: "menu",
       puzzles: [],
       score: 0,
-      time: 30
+      time: 30,
+      incorrect: "transparent"
     };
+  }
+
+  componentDidMount() {
+    Sound.setCategory("Playback", true);
   }
 
   restartTimer() {
@@ -51,6 +57,7 @@ export default class App extends React.Component {
     timer = setInterval(() => {
       const { highScore, mode, score, time } = _.clone(this.state);
       if (time - 1 <= 0) {
+        this.playSound('end_of_game.wav');
         clearInterval(timer);
         let newHighScore = score > highScore ? score : highScore;
         switch (mode) {
@@ -69,32 +76,39 @@ export default class App extends React.Component {
         }
         this.setState({ gameOver: true, highScore: newHighScore });
       }
-      this.setState({ time: time - 1 });
+      if (time - 1 != -1) {
+        this.setState({ time: time - 1 });
+      }
     }, 1000);
   }
 
   resetDefaults(page, callback) {
     let time = this.state.mode == "endless" ? 10 : 30;
     let difficulty = this.state.mode == "endless" ? Constants.EASY : _.clone(this.state.difficulty);
-    this.setState({
-      difficulty,
-      gameOver: false,
-      page: page,
-      score: 0,
-      time
-    }, function() {
-      if (page == "game") {
-        this.startNextRound();
+    this.setState(
+      {
+        difficulty,
+        gameOver: false,
+        page: page,
+        score: 0,
+        time
+      },
+      function() {
+        if (page == "game") {
+          this.startNextRound();
+        }
       }
-    });
+    );
   }
 
   onRestart() {
+    this.playSound('click_button.wav');
     this.resetDefaults("game");
     this.restartTimer();
   }
 
   onReturnToMenu() {
+    this.playSound('click_button.wav');
     this.resetDefaults("menu");
   }
 
@@ -102,23 +116,44 @@ export default class App extends React.Component {
     const { differentPuzzle, difficulty, gameOver, mode, score, time } = _.clone(this.state);
     if (gameOver) return;
     if (puzzle == differentPuzzle) {
+      this.playSound('correct2.wav');
       this.setState({ score: score + 1 });
       if (mode == "endless") {
         this.setState({ time: time + Math.sqrt(difficulty) + 1 });
         if ((score + 1) % 10 == 0 && difficulty < Constants.INSANE) {
-          this.setState({
-            difficulty: Math.pow(Math.sqrt(difficulty) + 1, 2)
-          }, function() {
-            this.startNextRound();
-          });
+          this.setState(
+            {
+              difficulty: Math.pow(Math.sqrt(difficulty) + 1, 2)
+            },
+            function() {
+              this.startNextRound();
+            }
+          );
           return;
         }
       }
       this.startNextRound();
     } else {
+      this.playSound('wrong1.wav');
       let newTime = time - Math.sqrt(difficulty);
+      let alpha = 1;
+      let that = this;
+      clearInterval(this.switchBack);
+      this.switchBack = setInterval(function() {
+        alpha -= 0.1;
+        if (alpha <= 0.3) {
+          alpha = 0;
+        }
+        that.setState({
+          incorrect: "rgba(197, 32, 46, " + alpha + ")"
+        });
+        if (alpha <= 0.3) {
+          clearInterval(that.switchBack);
+        }
+      }, 10);
       this.setState({
-        time: newTime <= 0 ? 0 : newTime
+        time: newTime <= 0 ? 0 : newTime,
+        incorrect: "red"
       });
     }
   }
@@ -165,33 +200,47 @@ export default class App extends React.Component {
     this.setState({ differentPuzzle, puzzles });
   }
 
+  playSound(filename) {
+    var sound = new Sound(filename, Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error);
+      } else {
+        sound.play();
+      }
+    });
+  }
+
   changeDifficulty(difficulty, mode) {
+    this.playSound('click_button.wav');
     this.setState({ difficulty, mode });
     switch (mode) {
       case "easy":
         AsyncStorage.getItem("easyHighScore")
           .then(value => {
-            console.log(value);
             this.setState({ highScore: Number(value) || 0 });
-          }).done();
+          })
+          .done();
         break;
       case "normal":
         AsyncStorage.getItem("normalHighScore")
           .then(value => {
             this.setState({ highScore: Number(value) || 0 });
-          }).done();
+          })
+          .done();
         break;
       case "hard":
         AsyncStorage.getItem("hardHighScore")
           .then(value => {
             this.setState({ highScore: Number(value) || 0 });
-          }).done();
+          })
+          .done();
         break;
       default:
         AsyncStorage.getItem("endlessHighScore")
           .then(value => {
             this.setState({ highScore: Number(value) || 0 });
-          }).done();
+          })
+          .done();
         break;
     }
   }
@@ -222,7 +271,7 @@ export default class App extends React.Component {
     if (page == "menu") {
       return (
         <View style={styles.menu}>
-          <Image source={require("./app/images/Spot&TapLogo.png")} style={styles.logo} />
+          <Image source={require("./app/images/Logo.png")} style={styles.logo} />
           <View style={styles.options}>
             <TouchableOpacity
               onPress={() => {
@@ -250,7 +299,7 @@ export default class App extends React.Component {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                this.setState({ mode: "endless" });
+                this.changeDifficulty(Constants.ENDLESS, "endless");
               }}
               title="Endless"
             >
@@ -270,6 +319,7 @@ export default class App extends React.Component {
           onTick={this.onTick}
           score={this.state.score}
           time={this.state.time}
+          incorrect={this.state.incorrect}
         />
         {this.renderGameSection()}
         <ActionButton onPressFunction={this.onReturnToMenu} buttonText="Main Menu" />
@@ -340,10 +390,13 @@ const styles = StyleSheet.create({
   },
   highScore: {
     backgroundColor: "transparent",
-    fontSize: 20,
+    fontSize: 36,
     fontWeight: "600",
-    color: "#E3E3E3",
+    color: "#EFEFEF",
     textAlign: "center",
     paddingTop: 20
+  },
+  playAgainBtn: {
+    backgroundColor: "#efa121"
   }
 });

@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "/Users/Fragger/Documents/spotNtap/android/app/build/intermediates/res/merged/debug/raw/correct2.wav",
+        "source": "/Users/Fragger/Documents/spotNtap/android/app/src/main/res/raw/correct2.wav"
+    },
+    {
+        "merged": "/Users/Fragger/Documents/spotNtap/android/app/build/intermediates/res/merged/debug/raw/click_button.wav",
+        "source": "/Users/Fragger/Documents/spotNtap/android/app/src/main/res/raw/click_button.wav"
+    },
+    {
+        "merged": "/Users/Fragger/Documents/spotNtap/android/app/build/intermediates/res/merged/debug/raw/wrong2.wav",
+        "source": "/Users/Fragger/Documents/spotNtap/android/app/src/main/res/raw/wrong2.wav"
+    },
+    {
+        "merged": "/Users/Fragger/Documents/spotNtap/android/app/build/intermediates/res/merged/debug/raw/correct1.wav",
+        "source": "/Users/Fragger/Documents/spotNtap/android/app/src/main/res/raw/correct1.wav"
+    },
+    {
+        "merged": "/Users/Fragger/Documents/spotNtap/android/app/build/intermediates/res/merged/debug/raw/wrong1.wav",
+        "source": "/Users/Fragger/Documents/spotNtap/android/app/src/main/res/raw/wrong1.wav"
+    },
+    {
+        "merged": "/Users/Fragger/Documents/spotNtap/android/app/build/intermediates/res/merged/debug/raw/end_of_game.wav",
+        "source": "/Users/Fragger/Documents/spotNtap/android/app/src/main/res/raw/end_of_game.wav"
+    }
+]
